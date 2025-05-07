@@ -488,7 +488,7 @@ const HomePage = () => {
           <h2 className="text-4xl font-bold mb-5">Ready to Top Up Your Game?</h2>
           <p className="text-lg text-gray-300 mb-8">Get started now and enjoy your game with extra credits</p>
           <button 
-            onClick={() => openTopUpModal()} 
+            onClick={scrollToGames} 
             className="rounded-full bg-gradient-to-r from-blue-400 to-blue-600 px-8 py-3 text-lg font-semibold shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
           >
             Top Up Now
