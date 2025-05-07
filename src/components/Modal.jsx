@@ -61,7 +61,7 @@ const Modal = ({ isOpen, onClose, title, children, size = 'medium' }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 p-4">
+    <div className="fixed inset-0 bg-[rgba(0,0,0,0.7)] bg-opacity-50 flex justify-center items-center z-1000 p-4">
       <div 
         ref={modalRef} 
         className={`bg-white rounded-xl shadow-lg w-full ${sizeClasses[size] || 'max-w-lg'} max-h-[85vh] overflow-y-auto 
