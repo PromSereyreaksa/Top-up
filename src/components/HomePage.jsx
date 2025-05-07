@@ -14,28 +14,28 @@ const HomePage = () => {
   const featuredGamesRef = useRef(null)
   const gamesRef = useRef(null)
   const { isTopUpInProgress } = useGameContext()
-  
+
   // Hero section state
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [slideDirection, setSlideDirection] = useState(null);
-  const [timerResetKey, setTimerResetKey] = useState(0); // For resetting the timer
-  
+  const [currentSlide, setCurrentSlide] = useState(0)
+  const [slideDirection, setSlideDirection] = useState(null)
+  const [timerResetKey, setTimerResetKey] = useState(0) // For resetting the timer
+
   const backgroundImages = [
-    '/images/hero-bg.jpg',
-    '/images/hero2-bg.jpg',
-    '/images/hero3-bg.jpg',
-    '/images/hero4-bg.jpg'
-  ];
-  
+    "/images/hero-bg.jpg",
+    "/images/hero2-bg.jpg",
+    "/images/hero3-bg.jpg",
+    "/images/hero4-bg.jpg",
+  ]
+
   useEffect(() => {
     // Reset timer when manually changing slides
     const interval = setInterval(() => {
       // Just update the slide index without slide direction for auto-transition (fade effect)
-      setCurrentSlide((prev) => (prev === backgroundImages.length - 1 ? 0 : prev + 1));
-    }, 10000); // Change slide every 10 seconds
-    
-    return () => clearInterval(interval);
-  }, [timerResetKey]); // Dependency on timerResetKey to reset timer when arrows are clicked
+      setCurrentSlide((prev) => (prev === backgroundImages.length - 1 ? 0 : prev + 1))
+    }, 10000) // Change slide every 10 seconds
+
+    return () => clearInterval(interval)
+  }, [timerResetKey]) // Dependency on timerResetKey to reset timer when arrows are clicked
 
   // Fallback games function to ensure all games are included
   const getAllFallbackGames = () => {
@@ -52,35 +52,89 @@ const HomePage = () => {
 
   // Use the updated fallback games function
   const fallbackGames = getAllFallbackGames()
+
   useEffect(() => {
-    setGames(fallbackGames)
-    setLoading(false)
+    const fetchGames = async () => {
+      try {
+        setLoading(true)
+        console.log("Fetching games from API...")
+
+        const res = await fetch("/api/games")
+
+        if (!res.ok) {
+          throw new Error(`Failed to fetch games: ${res.status}`)
+        }
+
+        const data = await res.json()
+        console.log(`Fetched ${data.length} games successfully`)
+
+        setGames(data)
+        setError(null)
+      } catch (err) {
+        console.error("Error fetching games:", err)
+        setError(err.message || "Failed to fetch games")
+        // Use fallback data if API fails
+        setGames(fallbackGames)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchGames()
   }, [])
 
-  // Featured games - could be from an API in a real app
-  const featuredGames = [
-    {
-      id: "mobile-legends",
-      name: "Mobile Legends",
-      image: "/images/mobile-legends.jpg",
-      discount: "10% OFF",
-      description: "Get bonus diamonds on all packages",
-    },
-    {
-      id: "pubg-mobile",
-      name: "PUBG Mobile",
-      image: "/images/pubg-mobile.jpg",
-      discount: "15% OFF",
-      description: "Special weekend offer on UC purchases",
-    },
-    {
-      id: "call-of-duty-mobile",
-      name: "Call of Duty Mobile",
-      image: "/images/call-of-duty-mobile.jpg",
-      discount: "20% OFF",
-      description: "Limited time promotion on CP packages",
-    },
-  ]
+  const [featuredGames, setFeaturedGames] = useState([])
+  const [featuredLoading, setFeaturedLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchFeaturedGames = async () => {
+      try {
+        setFeaturedLoading(true)
+        console.log("Fetching featured games from API...")
+
+        const res = await fetch("/api/games/featured")
+
+        if (!res.ok) {
+          throw new Error(`Failed to fetch featured games: ${res.status}`)
+        }
+
+        const data = await res.json()
+        console.log(`Fetched ${data.length} featured games successfully`)
+
+        setFeaturedGames(data)
+      } catch (err) {
+        console.error("Error fetching featured games:", err)
+        // Use fallback featured games if API fails
+        setFeaturedGames([
+          {
+            id: "mobile-legends",
+            name: "Mobile Legends",
+            image: "/images/mobile-legends.jpg",
+            discount: "10% OFF",
+            description: "Get bonus diamonds on all packages",
+          },
+          {
+            id: "pubg-mobile",
+            name: "PUBG Mobile",
+            image: "/images/pubg-mobile.jpg",
+            discount: "15% OFF",
+            description: "Special weekend offer on UC purchases",
+          },
+          {
+            id: "call-of-duty-mobile",
+            name: "Call of Duty Mobile",
+            image: "/images/call-of-duty-mobile.jpg",
+            discount: "20% OFF",
+            description: "Limited time promotion on CP packages",
+          },
+        ])
+      } finally {
+        setFeaturedLoading(false)
+      }
+    }
+
+    fetchFeaturedGames()
+  }, [])
 
   // Testimonials data
   const testimonials = [
@@ -149,39 +203,39 @@ const HomePage = () => {
       featuredGamesRef.current.scrollIntoView({ behavior: "smooth" })
     }
   }
-  
+
   const scrollToGames = () => {
     if (gamesRef.current) {
       gamesRef.current.scrollIntoView({ behavior: "smooth" })
     }
   }
-  
+
   // Hero section navigation functions
   const goToPrevSlide = () => {
-    setSlideDirection('right');
-    setCurrentSlide((prev) => (prev === 0 ? backgroundImages.length - 1 : prev - 1));
-    
+    setSlideDirection("right")
+    setCurrentSlide((prev) => (prev === 0 ? backgroundImages.length - 1 : prev - 1))
+
     // Reset direction after animation completes
     setTimeout(() => {
-      setSlideDirection(null);
-    }, 700);
-    
+      setSlideDirection(null)
+    }, 700)
+
     // Reset the timer
-    setTimerResetKey(prev => prev + 1);
-  };
-  
+    setTimerResetKey((prev) => prev + 1)
+  }
+
   const goToNextSlide = () => {
-    setSlideDirection('left');
-    setCurrentSlide((prev) => (prev === backgroundImages.length - 1 ? 0 : prev + 1));
-    
+    setSlideDirection("left")
+    setCurrentSlide((prev) => (prev === backgroundImages.length - 1 ? 0 : prev + 1))
+
     // Reset direction after animation completes
     setTimeout(() => {
-      setSlideDirection(null);
-    }, 700);
-    
+      setSlideDirection(null)
+    }, 700)
+
     // Reset the timer
-    setTimerResetKey(prev => prev + 1);
-  };
+    setTimerResetKey((prev) => prev + 1)
+  }
 
   // Generate star ratings
   const renderStars = (rating) => {
@@ -204,31 +258,34 @@ const HomePage = () => {
             rel="stylesheet"
           />
         </head>
-        
+
         {/* Carousel wrapper */}
         {backgroundImages.map((bgImage, index) => (
-          <div 
+          <div
             key={index}
             className={`absolute inset-0 flex h-full w-full items-center justify-center bg-cover bg-center p-5 text-center text-white transition-all duration-700 ease-in-out ${
-              currentSlide === index ? 'opacity-100' : 'opacity-0'
+              currentSlide === index ? "opacity-100" : "opacity-0"
             } ${
-              slideDirection === 'left' && currentSlide === index ? 'translate-x-0' : 
-              slideDirection === 'left' && (currentSlide === index - 1 || (currentSlide === backgroundImages.length - 1 && index === 0)) ? 'translate-x-full' :
-              slideDirection === 'right' && currentSlide === index ? 'translate-x-0' :
-              slideDirection === 'right' && (currentSlide === index + 1 || (currentSlide === 0 && index === backgroundImages.length - 1)) ? '-translate-x-full' : ''
+              slideDirection === "left" && currentSlide === index
+                ? "translate-x-0"
+                : slideDirection === "left" &&
+                    (currentSlide === index - 1 || (currentSlide === backgroundImages.length - 1 && index === 0))
+                  ? "translate-x-full"
+                  : slideDirection === "right" && currentSlide === index
+                    ? "translate-x-0"
+                    : slideDirection === "right" &&
+                        (currentSlide === index + 1 || (currentSlide === 0 && index === backgroundImages.length - 1))
+                      ? "-translate-x-full"
+                      : ""
             }`}
-            style={{ 
+            style={{
               backgroundImage: `url(${bgImage})`,
             }}
           >
             <div className="absolute inset-0 bg-black/70"></div>
             <div className="relative z-10 max-w-4xl" style={{ fontFamily: '"Noto Sans Khmer", sans-serif' }}>
-              <h1 className="mb-8 text-5xl font-bold leading-relaxed shadow-text">
-                បញ្ចូលទឹកប្រាក់ក្នុងហ្គេមរបស់អ្នកភ្លាមៗ
-              </h1>
-              <p className="mb-8 text-xl">
-                សេវាកម្មបញ្ចូលទឹកប្រាក់ហ្គេមលឿន សុវត្ថិភាព និងតម្លៃសមរម្យជាងគេក្នុងប្រទេសកម្ពុជា
-              </p>
+              <h1 className="mb-8 text-5xl font-bold leading-relaxed shadow-text">បញ្ចូលទឹកប្រាក់ក្នុងហ្គេមរបស់អ្នកភ្លាមៗ</h1>
+              <p className="mb-8 text-xl">សេវាកម្មបញ្ចូលទឹកប្រាក់ហ្គេមលឿន សុវត្ថិភាព និងតម្លៃសមរម្យជាងគេក្នុងប្រទេសកម្ពុជា</p>
               <div className="flex flex-wrap justify-center gap-5">
                 <button
                   onClick={scrollToGames}
@@ -246,33 +303,57 @@ const HomePage = () => {
             </div>
           </div>
         ))}
-        
+
         {/* Slider controls */}
-        <button 
-          type="button" 
-          className="absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" 
+        <button
+          type="button"
+          className="absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
           onClick={goToPrevSlide}
         >
           <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 group-hover:bg-white/50 group-focus:ring-4 group-focus:ring-white group-focus:outline-none">
-            <svg className="w-4 h-4 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 1 1 5l4 4"/>
+            <svg
+              className="w-4 h-4 text-white"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 6 10"
+            >
+              <path
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M5 1 1 5l4 4"
+              />
             </svg>
             <span className="sr-only">Previous</span>
           </span>
         </button>
-        <button 
-          type="button" 
-          className="absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" 
+        <button
+          type="button"
+          className="absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
           onClick={goToNextSlide}
         >
           <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 group-hover:bg-white/50 group-focus:ring-4 group-focus:ring-white group-focus:outline-none">
-            <svg className="w-4 h-4 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-              <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4"/>
+            <svg
+              className="w-4 h-4 text-white"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 6 10"
+            >
+              <path
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="m1 9 4-4-4-4"
+              />
             </svg>
             <span className="sr-only">Next</span>
           </span>
         </button>
-        
+
         <style jsx>{`
           .shadow-text {
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
@@ -287,41 +368,52 @@ const HomePage = () => {
           <p className="text-lg text-gray-600 max-w-lg mx-auto">Limited time offers on popular games</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-          {featuredGames.map((game) => (
-            <div 
-              key={game.id} 
-              className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer"
-              onClick={() => openTopUpModal(game.id)}
-            >
-              <div className="relative h-40 overflow-hidden">
-                <img 
-                  src={game.image || "/placeholder.svg"} 
-                  alt={game.name} 
-                  className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-                />
-                <div className="absolute top-4 right-4 bg-gradient-to-r from-red-500 to-yellow-400 text-white py-1 px-3 rounded-full font-bold text-sm flex items-center gap-1">
-                  <FaFire className="text-xs" />
-                  <span>{game.discount}</span>
+        {featuredLoading ? (
+          <div className="text-center py-10 text-lg">Loading promotions...</div>
+        ) : featuredGames.length === 0 ? (
+          <div className="text-center py-10 text-lg text-gray-600">No promotions available at this time.</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            {featuredGames.map((game) => (
+              <div
+                key={game.id}
+                className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer"
+                onClick={() => openTopUpModal(game.id)}
+              >
+                <div className="relative h-40 overflow-hidden">
+                  <img
+                    src={game.image || "/placeholder.svg"}
+                    alt={game.name}
+                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+                    onError={(e) => {
+                      e.target.src = "/placeholder.svg"
+                    }}
+                  />
+                  <div className="absolute top-4 right-4 bg-gradient-to-r from-red-500 to-yellow-400 text-white py-1 px-3 rounded-full font-bold text-sm flex items-center gap-1">
+                    <FaFire className="text-xs" />
+                    <span>{game.discount}</span>
+                  </div>
+                </div>
+                <div className="p-5">
+                  <h3 className="text-xl font-bold mb-2">{game.name}</h3>
+                  <p className="text-gray-600 mb-5 text-sm">{game.description}</p>
+                  <button className="flex items-center gap-2 bg-gradient-to-r from-blue-400 to-blue-600 text-white py-2 px-5 rounded transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
+                    <FaGift /> Claim Offer
+                  </button>
                 </div>
               </div>
-              <div className="p-5">
-                <h3 className="text-xl font-bold mb-2">{game.name}</h3>
-                <p className="text-gray-600 mb-5 text-sm">{game.description}</p>
-                <button className="flex items-center gap-2 bg-gradient-to-r from-blue-400 to-blue-600 text-white py-2 px-5 rounded transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
-                  <FaGift /> Claim Offer
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Games Section */}
       <section id="games" ref={gamesRef} className="py-20 px-5 bg-gray-50">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold mb-4 text-gray-800">Popular Games</h2>
-          <p className="text-lg text-gray-600 max-w-lg mx-auto">Select your game to get started with the top-up process</p>
+          <p className="text-lg text-gray-600 max-w-lg mx-auto">
+            Select your game to get started with the top-up process
+          </p>
         </div>
 
         {loading ? (
@@ -347,9 +439,9 @@ const HomePage = () => {
                 }}
               >
                 <div className="h-30 overflow-hidden flex-shrink-0">
-                  <img 
-                    src={game.image || `/images/${game.id}.jpg`} 
-                    alt={game.name} 
+                  <img
+                    src={game.image || `/images/${game.id}.jpg`}
+                    alt={game.name}
                     className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                   />
                 </div>
@@ -414,13 +506,11 @@ const HomePage = () => {
 
         <div className="flex flex-wrap justify-center gap-8 mx-auto">
           {testimonials.map((testimonial) => (
-            <div 
-              key={testimonial.id} 
+            <div
+              key={testimonial.id}
               className="w-full max-w-sm bg-white rounded-lg p-6 shadow-md transition-transform duration-300 hover:-translate-y-1"
             >
-              <div className="flex gap-1 mb-4 text-xl">
-                {renderStars(testimonial.rating)}
-              </div>
+              <div className="flex gap-1 mb-4 text-xl">{renderStars(testimonial.rating)}</div>
               <p className="text-gray-700 mb-5 italic">"{testimonial.comment}"</p>
               <div className="flex flex-col gap-1">
                 <div className="font-semibold text-gray-800">{testimonial.name}</div>
@@ -487,8 +577,8 @@ const HomePage = () => {
         <div className="max-w-3xl mx-auto">
           <h2 className="text-4xl font-bold mb-5">Ready to Top Up Your Game?</h2>
           <p className="text-lg text-gray-300 mb-8">Get started now and enjoy your game with extra credits</p>
-          <button 
-            onClick={scrollToGames} 
+          <button
+            onClick={scrollToGames}
             className="rounded-full bg-gradient-to-r from-blue-400 to-blue-600 px-8 py-3 text-lg font-semibold shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
           >
             Top Up Now

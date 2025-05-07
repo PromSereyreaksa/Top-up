@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { FaGamepad, FaArrowRight } from "react-icons/fa"
 import { useGameContext } from "../context/GameContext"
 import TopUpFlow from "./TopUpFlow" // Import the TopUpFlow component
@@ -11,12 +11,40 @@ const QuickTopUpWidget = () => {
   const { setSelectedGame } = useGameContext()
 
   // Popular games for quick access
-  const popularGames = [
+  const [popularGames, setPopularGames] = useState([
     { id: "mobile-legends", name: "Mobile Legends", icon: "🎮" },
     { id: "pubg-mobile", name: "PUBG Mobile", icon: "🔫" },
     { id: "call-of-duty-mobile", name: "Call of Duty Mobile", icon: "🎯" },
     { id: "free-fire", name: "Free Fire", icon: "🔥" },
-  ]
+  ])
+
+  useEffect(() => {
+    const fetchGames = async () => {
+      try {
+        const res = await fetch("/api/games")
+
+        if (!res.ok) {
+          throw new Error(`Failed to fetch games: ${res.status}`)
+        }
+
+        const data = await res.json()
+
+        // Get the first 4 games for the widget
+        const popularGames = data.slice(0, 4).map((game) => ({
+          id: game.id,
+          name: game.name,
+          icon: "🎮",
+        }))
+
+        setPopularGames(popularGames)
+      } catch (err) {
+        console.error("Error fetching games for widget:", err)
+        // Use fallback data if API fails
+      }
+    }
+
+    fetchGames()
+  }, [])
 
   const openTopUpModal = (gameId = null) => {
     setSelectedGameId(gameId)

@@ -13,8 +13,29 @@ const GameSelectionModal = ({ isOpen, onClose, onNext }) => {
 
   useEffect(() => {
     const fetchGames = async () => {
-      setGames(fallbackGames)
-      setLoading(false)
+      try {
+        setLoading(true)
+        console.log("Fetching games for selection modal...")
+
+        const res = await fetch("/api/games")
+
+        if (!res.ok) {
+          throw new Error(`Failed to fetch games: ${res.status}`)
+        }
+
+        const data = await res.json()
+        console.log(`Fetched ${data.length} games for selection modal`)
+
+        setGames(data)
+        setError(null)
+      } catch (err) {
+        console.error("Error fetching games for selection modal:", err)
+        setError(err.message || "Failed to fetch games")
+        // Use fallback data if API fails
+        setGames(fallbackGames)
+      } finally {
+        setLoading(false)
+      }
     }
 
     if (isOpen) {
@@ -51,14 +72,14 @@ const GameSelectionModal = ({ isOpen, onClose, onNext }) => {
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 mt-2">
           {games.map((game) => (
-            <div 
-              key={game.id} 
+            <div
+              key={game.id}
               className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 ease-in-out cursor-pointer hover:-translate-y-1 h-full"
               onClick={() => handleGameSelect(game)}
             >
               <div className="h-[90px] overflow-hidden">
-                <img 
-                  src={game.image || `/images/${game.id}.jpg`} 
+                <img
+                  src={game.image || `/images/${game.id}.jpg`}
                   alt={game.name}
                   className="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110"
                 />
