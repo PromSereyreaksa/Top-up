@@ -140,7 +140,7 @@ const HomePage = () => {
     <div className="w-full">
       {/* Hero Section */}
       <section className="relative flex h-[600px] items-center justify-center bg-[url('/images/hero-bg.jpg')] bg-cover bg-center p-5 text-center text-white before:absolute before:inset-0 before:bg-black/70">
-        <div className="relative z-10 max-w-4xl" style={{ fontFamily: '"Noto Sans Khmer", sans-serif' }}>
+        <div className="relative max-w-4xl" style={{ fontFamily: '"Noto Sans Khmer", sans-serif' }}>
           <h1 className="mb-8 text-5xl font-bold leading-relaxed shadow-text">
             បញ្ចូលទឹកប្រាក់ក្នុងហ្គេមរបស់អ្នកភ្លាមៗ
           </h1>
@@ -302,7 +302,7 @@ const HomePage = () => {
           <p className="text-lg text-gray-600 max-w-lg mx-auto">Trusted by gamers across Cambodia</p>
         </div>
 
-        <div className="flex flex-wrap justify-center gap-8 max-w-6xl mx-auto">
+        <div className="flex flex-wrap justify-center gap-8 mx-auto">
           {testimonials.map((testimonial) => (
             <div 
               key={testimonial.id} 
