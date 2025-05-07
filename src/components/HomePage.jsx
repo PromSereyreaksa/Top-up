@@ -32,7 +32,7 @@ const HomePage = () => {
   useEffect(() => {
     setGames(fallbackGames)
     setLoading(false)
-  }, [fallbackGames])
+  }, [])
 
   // Featured games - could be from an API in a real app
   const featuredGames = [
