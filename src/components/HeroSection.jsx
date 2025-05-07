@@ -3,9 +3,6 @@
 // No need to import the font, we'll use CSS classes instead
 
 const HeroSection = ({ openTopUpModal, scrollToFeaturedGames }) => {
-  return (
-    <>
-      {/* Add the Google Font import in the head */}
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -14,6 +11,8 @@ const HeroSection = ({ openTopUpModal, scrollToFeaturedGames }) => {
           rel="stylesheet" 
         />
       </head>
+  return (
+    <>
       
       <section className="relative flex h-[600px] items-center justify-center bg-[url('/images/hero-bg.jpg')] bg-cover bg-center p-5 text-center text-white before:absolute before:inset-0 before:bg-black/70">
         <div className="relative z-10 max-w-4xl" style={{ fontFamily: '"Noto Sans Khmer", sans-serif' }}>

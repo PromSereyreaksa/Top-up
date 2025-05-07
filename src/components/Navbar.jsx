@@ -61,7 +61,8 @@ const Navbar = () => {
             </a>
           </li>
           <li className="flex h-[50px] w-full items-center md:h-[70px] md:w-auto">
-            <Link href="/support" className="flex h-full w-full items-center px-5 font-medium text-white no-underline transition-all duration-300 hover:bg-[rgba(76,201,240,0.1)] hover:text-[#4cc9f0] md:px-4" onClick={closeMenu}>
+            <Link href="/" replace 
+              className="flex h-full w-full items-center px-5 font-medium text-white no-underline transition-all duration-300 hover:bg-[rgba(76,201,240,0.1)] hover:text-[#4cc9f0] md:px-4" onClick={closeMenu}>
               <FaHeadset className="mr-2.5 text-lg text-[#4cc9f0] md:mr-1.5 md:text-base" />
               <span>Support</span>
             </Link>

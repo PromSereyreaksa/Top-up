@@ -79,40 +79,45 @@ const TopUpFlow = ({ isOpen, onClose, initialStep = "game", gameId = null }) => 
     setCurrentStep(nextStep)
   }
 
-  
+  // Only render the component if the modal is open
+  if (!isOpen) return null
 
-  return (
-    <>
-      <GameSelectionModal
-        isOpen={isOpen && currentStep === "game"}
-        onClose={handleClose}
-        onNext={() => handleNext("package")}
-      />
-
-      <PackageSelectionModal
-        isOpen={isOpen && currentStep === "package"}
-        onClose={handleClose}
-        onBack={() => handleNext("game")}
-        onNext={() => handleNext("verification")}
-      />
-
-      <VerificationModal
-        isOpen={isOpen && currentStep === "verification"}
-        onClose={handleClose}
-        onBack={() => handleNext("package")}
-        onNext={() => handleNext("payment")}
-      />
-
-      <PaymentModal
-        isOpen={isOpen && currentStep === "payment"}
-        onClose={handleClose}
-        onBack={() => handleNext("verification")}
-        onNext={() => handleNext("confirmation")}
-      />
-
-      <ConfirmationModal isOpen={isOpen && currentStep === "confirmation"} onClose={handleClose} onDone={handleClose} />
-    </>
-  )
+  // Render only the current step's modal
+  switch (currentStep) {
+    case "game":
+      return <GameSelectionModal isOpen={true} onClose={handleClose} onNext={() => handleNext("package")} />
+    case "package":
+      return (
+        <PackageSelectionModal
+          isOpen={true}
+          onClose={handleClose}
+          onBack={() => handleNext("game")}
+          onNext={() => handleNext("verification")}
+        />
+      )
+    case "verification":
+      return (
+        <VerificationModal
+          isOpen={true}
+          onClose={handleClose}
+          onBack={() => handleNext("package")}
+          onNext={() => handleNext("payment")}
+        />
+      )
+    case "payment":
+      return (
+        <PaymentModal
+          isOpen={true}
+          onClose={handleClose}
+          onBack={() => handleNext("verification")}
+          onNext={() => handleNext("confirmation")}
+        />
+      )
+    case "confirmation":
+      return <ConfirmationModal isOpen={true} onClose={handleClose} onDone={handleClose} />
+    default:
+      return null
+  }
 }
 
 export default TopUpFlow
