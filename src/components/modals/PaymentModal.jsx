@@ -37,51 +37,89 @@ const PaymentModal = ({ isOpen, onClose, onBack, onNext }) => {
     setError(null)
 
     try {
-      // First create an order
+      // Create order data
       const orderData = {
         gameId: selectedGame.id,
+        gameName: selectedGame.name,
         packageId: selectedPackage.id,
-        userId: userId,
-        serverId: serverId || "",
+        packageName: selectedPackage.name,
         amount: selectedPackage.amount,
         price: selectedPackage.price,
+        currency: selectedPackage.currency || "USD",
+        userId: userId,
+        serverId: serverId || "",
         paymentMethod: selectedPayment.id,
+        paymentStatus: "pending",
+        fulfillmentStatus: "pending",
       }
 
-      // In a real app, you would create an order in the database
-      // For now, we'll simulate a successful order creation
-      const orderResponse = {
-        orderId: "ORD" + Math.floor(Math.random() * 1000000),
-        ...orderData,
-        status: "pending",
-        createdAt: new Date().toISOString(),
+      // Create an order in the database
+      const orderResponse = await fetch("/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(orderData),
+      })
+
+      if (!orderResponse.ok) {
+        throw new Error("Failed to create order")
       }
 
-      setOrderId(orderResponse.orderId)
+      const orderResult = await orderResponse.json()
+      setOrderId(orderResult.orderId)
 
-      // Then generate QR code for payment
+      // Generate QR code for payment
       // In a real app, you would call the payment gateway API
       // For now, we'll simulate a QR code response
       const qrResponse = {
-        qrCode: "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" + orderResponse.orderId,
+        qrCode: "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" + orderResult.orderId,
         expiresIn: 900, // 15 minutes in seconds
       }
 
       setQrCode(qrResponse)
       setPaymentMethod(selectedPayment)
       setOrderDetails({
-        orderId: orderResponse.orderId,
+        orderId: orderResult.orderId,
         ...orderData,
       })
     } catch (err) {
+      console.error("Failed to generate QR code:", err)
       setError("Failed to generate QR code. Please try again.")
     } finally {
       setQrLoading(false)
     }
   }
 
-  const handleConfirmPayment = () => {
-    onNext()
+  const handleConfirmPayment = async () => {
+    try {
+      setLoading(true)
+
+      // Update the order status in the database
+      const updateResponse = await fetch(`/api/orders/${orderId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          paymentStatus: "paid",
+          transactionId: "TXN" + Math.floor(Math.random() * 1000000),
+          updatedAt: new Date(),
+        }),
+      })
+
+      if (!updateResponse.ok) {
+        throw new Error("Failed to update payment status")
+      }
+
+      // Move to next step
+      onNext()
+    } catch (err) {
+      console.error("Payment confirmation error:", err)
+      setError("Failed to confirm payment. Please try again.")
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -149,11 +187,11 @@ const PaymentModal = ({ isOpen, onClose, onBack, onNext }) => {
         {/* Generate QR Button */}
         {selectedPayment && !qrCode && (
           <div className="flex justify-center my-4">
-            <button 
+            <button
               className={`flex items-center gap-1.5 px-4 py-2.5 rounded-md font-medium text-sm text-white
                 bg-gradient-to-r from-blue-400 to-blue-600 hover:bg-gradient-to-r hover:from-blue-600 hover:to-blue-400
                 transition-all ${qrLoading ? "opacity-70 cursor-not-allowed" : ""}`}
-              onClick={handleGenerateQR} 
+              onClick={handleGenerateQR}
               disabled={qrLoading}
             >
               {qrLoading ? "Generating..." : "Generate QR Code"} {!qrLoading && <FaQrcode />}
@@ -182,25 +220,26 @@ const PaymentModal = ({ isOpen, onClose, onBack, onNext }) => {
             <div className="mb-4 font-medium text-sm">
               <span>Order ID: {orderId}</span>
             </div>
-            <button 
+            <button
               className="flex items-center gap-1.5 px-4 py-2.5 rounded-md font-medium text-sm text-white
                 bg-gradient-to-r from-green-500 to-green-700 hover:bg-gradient-to-r hover:from-green-700 hover:to-green-500
                 transition-all"
               onClick={handleConfirmPayment}
+              disabled={loading}
             >
-              I've Completed the Payment <FaCheckCircle />
+              {loading ? "Processing..." : "I've Completed the Payment"} {!loading && <FaCheckCircle />}
             </button>
           </div>
         )}
 
         {/* Back Button */}
         <div className="flex justify-start mt-1">
-          <button 
-            type="button" 
+          <button
+            type="button"
             className={`flex items-center gap-1.5 px-3 py-2 rounded-md font-medium text-sm
               bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all
               ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
-            onClick={onBack} 
+            onClick={onBack}
             disabled={loading}
           >
             <FaArrowLeft /> Back
