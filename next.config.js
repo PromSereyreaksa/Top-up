@@ -1,45 +1,32 @@
-import path from 'path';
-import crypto from 'crypto-browserify'; // Use the polyfill for crypto
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  images: {
-    domains: ["res.cloudinary.com"],
-    unoptimized: true,
-  },
-  async redirects() {
-    return [
-      {
-        source: "/old-page",
-        destination: "/new-page",
-        permanent: true,
-      },
-    ];
-  },
-  async rewrites() {
-    return [
-      {
-        source: "/sitemap.xml",
-        destination: "/api/sitemap",
-      },
-    ];
-  },
-  webpack(config, { isServer }) {
+  webpack: (config, { isServer }) => {
     if (!isServer) {
-      // Polyfill `crypto` for client-side usage
+      // Client-side specific config
       config.resolve.fallback = {
-        crypto: path.resolve('node_modules', 'crypto-browserify'),
+        ...config.resolve.fallback,
+        fs: false,
+        crypto: require.resolve('crypto-browserify'),
+        stream: require.resolve('stream-browserify'),
+        assert: require.resolve('assert'),
+        http: require.resolve('stream-http'),
+        https: require.resolve('https-browserify'),
+        os: require.resolve('os-browserify'),
+        url: require.resolve('url'),
+        buffer: require.resolve('buffer'),
+        process: require.resolve('process/browser'),
       };
+      
+      config.plugins.push(
+        new (require('webpack')).ProvidePlugin({
+          process: 'process/browser',
+          Buffer: ['buffer', 'Buffer'],
+        })
+      );
     }
     return config;
   },
 };
 
-export default nextConfig;
+module.exports = nextConfig;
