@@ -1,4 +1,4 @@
-import { ImageResponse } from "next/server"
+import { ImageResponse } from "next/og"
 import dbConnect from "@/lib/dbConnect"
 import Game from "@/db/Game"
 
