@@ -1,4 +1,5 @@
-import crypto from 'crypto-browserify';
+import path from 'path';
+import crypto from 'crypto-browserify'; // Use the polyfill for crypto
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -34,7 +35,7 @@ const nextConfig = {
     if (!isServer) {
       // Polyfill `crypto` for client-side usage
       config.resolve.fallback = {
-        crypto: require.resolve('crypto-browserify'),
+        crypto: path.resolve('node_modules', 'crypto-browserify'),
       };
     }
     return config;
