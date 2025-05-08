@@ -65,7 +65,7 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 1. Clone the repository:
 
 ```shellscript
-git clone https://github.com/yourusername/coppsary-bok-luy.git
+git clone https://github.com/PromSereyreaksa/Top-up.git
 cd coppsary-bok-luy
 ```
 
