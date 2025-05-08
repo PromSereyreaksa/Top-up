@@ -93,7 +93,7 @@ const Navbar = () => {
           onClick={handleHomeClick}
         >
           <FaGamepad className="mr-2 text-xl text-[#4cc9f0]" />
-          <span>Coppsary Bok Luy</span>
+          <span>Coppsary</span>
         </Link>
 
         <div className="cursor-pointer text-2xl text-white md:hidden" onClick={toggleMenu}>
