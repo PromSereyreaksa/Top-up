@@ -80,11 +80,12 @@ npm install
 3. Update the package.json scripts to use the custom server:
 
 ```json
-"scripts": {
-  "dev": "node server.js",
+ "scripts": {
+  "dev": "concurrently \"next dev --turbo\" \"node src/server.js\"",
   "build": "next build",
-  "start": "NODE_ENV=production node server.js"
-}
+  "start": "concurrently \"next start\" \"node backend/server.js\"",
+  "lint": "next lint"
+},
 ```
 
 
