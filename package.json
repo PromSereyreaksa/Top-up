@@ -11,9 +11,17 @@
   },
   "dependencies": {
     "dotenv": "^16.5.0",
+<<<<<<< HEAD
     "lucide-react": "^0.507.0",
     "mongoose": "^8.14.1",
+=======
+    "express": "^5.1.0",
+    "lucide-react": "^0.507.0",
+    "mongoose": "^8.14.1",
+    "multer": "^1.4.5-lts.2",
+>>>>>>> b2f94eae33aa4770fc6be1b78a0c3e16fbe9809c
     "next": "15.3.2",
+    "next-cloudinary": "^6.16.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",

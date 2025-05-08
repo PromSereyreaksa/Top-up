@@ -1,14 +1,14 @@
-import HomePage from "@/components/HomePage";
-import { GameProvider } from "@/context/GameContext";
-import Footer from "@/components/Footer";
+import HomePage from "@/components/HomePage"
+import { GameProvider } from "@/context/GameContext"
+import Footer from "@/components/Footer"
 
 export default function Home() {
   return (
-    <div >
+    <div>
       <GameProvider>
         <HomePage />
-        <Footer/>
+        <Footer />
       </GameProvider>
     </div>
-  );
+  )
 }

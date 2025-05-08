@@ -26,17 +26,29 @@ const TopUpFlow = ({ isOpen, onClose, initialStep = "game", gameId = null }) => 
     if (isOpen && gameId && !initialized) {
       console.log("TopUpFlow: Setting selected game:", gameId)
 
-      // In a real app, you would fetch the game details from the API
-      // For now, we'll just set the ID and name
-      setSelectedGame({
-        id: gameId,
-        name: getGameNameById(gameId),
-      })
+      // Fetch the game details from the API
+      const getGameDetails = async () => {
+        const gameDetails = await fetchGameDetails(gameId)
 
-      // If a game is pre-selected, always start from the package selection step
-      setCurrentStep("package")
+        if (gameDetails) {
+          setSelectedGame({
+            id: gameId,
+            name: gameDetails.name,
+          })
+        } else {
+          // Fallback to just using the ID and a generic name
+          setSelectedGame({
+            id: gameId,
+            name: getGameNameById(gameId),
+          })
+        }
 
-      setInitialized(true)
+        // If a game is pre-selected, always start from the package selection step
+        setCurrentStep("package")
+        setInitialized(true)
+      }
+
+      getGameDetails()
     } else if (isOpen && !initialized) {
       // If we already have a selected game, skip to package selection
       if (selectedGame) {
@@ -51,7 +63,12 @@ const TopUpFlow = ({ isOpen, onClose, initialStep = "game", gameId = null }) => 
   }, [isOpen, gameId, setSelectedGame, initialStep, initialized, selectedGame, setIsTopUpInProgress])
 
   const getGameNameById = (id) => {
-    // Expanded list of game names for better coverage
+    // First check if we have the game in our context
+    if (selectedGame && selectedGame.id === id) {
+      return selectedGame.name
+    }
+
+    // Otherwise, try to find it in the fallback list
     const games = {
       "mobile-legends": "Mobile Legends",
       "free-fire": "Free Fire",
@@ -64,6 +81,23 @@ const TopUpFlow = ({ isOpen, onClose, initialStep = "game", gameId = null }) => 
       "genshin-impact": "Genshin Impact",
     }
     return games[id] || "Unknown Game"
+  }
+
+  // Add a function to fetch game details when needed
+  const fetchGameDetails = async (gameId) => {
+    try {
+      const res = await fetch(`/api/games/${gameId}`)
+
+      if (!res.ok) {
+        throw new Error(`Failed to fetch game details: ${res.status}`)
+      }
+
+      const game = await res.json()
+      return game
+    } catch (err) {
+      console.error(`Error fetching game details for ${gameId}:`, err)
+      return null
+    }
   }
 
   const handleClose = () => {
