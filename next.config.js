@@ -1,9 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  webpack: (config, { isServer }) => {
+  webpack: async (config, { isServer }) => {
     if (!isServer) {
       // Client-side specific config
+      const webpack = await import('webpack');
       config.resolve.fallback = {
         ...config.resolve.fallback,
         fs: false,
@@ -19,7 +20,7 @@ const nextConfig = {
       };
 
       config.plugins.push(
-        new (require('webpack')).ProvidePlugin({
+        new webpack.ProvidePlugin({
           process: 'process/browser',
           Buffer: ['buffer', 'Buffer'],
         })
