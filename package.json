@@ -3,16 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
- "scripts": {
-  "dev": "concurrently \"next dev --turbo\" \"node src/server.js\"",
-  "build": "next build",
-  "start": "concurrently \"next start\" \"node backend/server.js\"",
-  "lint": "next lint"
-},
+  "scripts": {
+    "dev": "concurrently \"next dev --turbo\" \"node src/server.js\"",
+    "build": "next build",
+    "start": "concurrently \"next start\" \"node backend/server.js\"",
+    "lint": "next lint"
+  },
   "dependencies": {
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.6.1",
     "clsx": "^2.1.1",
+    "crypto": "^1.0.1",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "fs": "^0.0.1-security",
@@ -23,6 +24,8 @@
     "multer": "^1.4.5-lts.2",
     "next": "15.3.2",
     "next-cloudinary": "^6.16.0",
+    "os": "^0.1.2",
+    "path": "^0.12.7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
