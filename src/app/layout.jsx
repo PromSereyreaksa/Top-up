@@ -14,53 +14,39 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 })
 
+
 export const metadata = {
-  title: "Coppsary Bok Luy | Game Top-Up Service in Cambodia",
-  description:
-    "The fastest and most reliable game top-up service in Cambodia. Get your game credits instantly at the best prices for Mobile Legends, PUBG, Free Fire and more.",
-  keywords: "game top-up, mobile legends, free fire, pubg mobile, cambodia, game credits, diamonds, UC, game currency",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://yourdomain.com"),
+  title: {
+    template: '%s | Coppsary Bok Luy',
+    default: 'Coppsary Bok Luy | #1 Game Top-Up Service in Cambodia',
+  },
+  description: 'Fast, secure and affordable game top-up service in Cambodia. Get instant Mobile Legends diamonds, PUBG UC, Free Fire diamonds with local payment methods.',
+  keywords: 'game top-up Cambodia, Mobile Legends diamonds, PUBG UC Cambodia, Free Fire top-up, game credits Cambodia',
+  metadataBase: new URL('https://yourdomain.com'),
   alternates: {
-    canonical: "/",
-  },
-  openGraph: {
-    title: "Coppsary Bok Luy | Game Top-Up Service in Cambodia",
-    description:
-      "The fastest and most reliable game top-up service in Cambodia. Get your game credits instantly at the best prices.",
-    url: "/",
-    siteName: "Coppsary Bok Luy",
-    images: [
-      {
-        url: "/images/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Coppsary Bok Luy - Game Top-Up Service",
-      },
-    ],
-    locale: "en_US",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Coppsary Bok Luy | Game Top-Up Service in Cambodia",
-    description:
-      "The fastest and most reliable game top-up service in Cambodia. Get your game credits instantly at the best prices.",
-    images: ["/images/og-image.jpg"],
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
+    canonical: '/',
+    languages: {
+      'en': '/',
+      'km': '/km',
     },
   },
-  verification: {
-    google: "YOUR_GOOGLE_VERIFICATION_ID", // Replace with your Google verification ID
+  openGraph: {
+    title: 'Coppsary Bok Luy | #1 Game Top-Up Service in Cambodia',
+    description: 'Fast, secure and affordable game top-up service in Cambodia.',
+    url: '/',
+    siteName: 'Coppsary Bok Luy',
+    images: [
+      {
+        url: '/images/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Coppsary Bok Luy - Game Top-Up Service',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
   },
+  // Add other site-wide metadata here
 }
 
 export default function RootLayout({ children }) {
