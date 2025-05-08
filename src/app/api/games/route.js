@@ -33,6 +33,7 @@ export async function POST(request) {
       id: body.id,
       name: body.name,
       image: body.image,
+      imagePublicId: body.imagePublicId, // Store Cloudinary public ID
       discount: body.discount,
       description: body.description,
       featured: body.featured || false,

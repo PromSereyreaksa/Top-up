@@ -5,6 +5,7 @@ const GameSchema = new mongoose.Schema({
   id: { type: String, required: true, unique: true },
   name: { type: String, required: true },
   image: { type: String, required: true },
+  imagePublicId: { type: String }, // Add this field for Cloudinary public ID
   discount: String,
   description: String,
   featured: { type: Boolean, default: false },

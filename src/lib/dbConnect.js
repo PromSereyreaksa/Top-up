@@ -1,8 +1,7 @@
 import mongoose from "mongoose"
 import "dotenv/config"
 
-const MONGODB_URI = "mongodb+srv://panha:172839@cluster0.wy5ohav.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0/TopUp"
-
+const MONGODB_URI = process.env.MONGODB_URI
 if (!MONGODB_URI) {
   throw new Error("Please define the MONGODB_URI environment variable")
 }

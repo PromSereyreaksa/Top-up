@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import { FaEdit, FaTrash, FaStar, FaImage } from "react-icons/fa"
 
 export default function AdminGames() {
   const [games, setGames] = useState([])
@@ -73,7 +74,7 @@ export default function AdminGames() {
     }
   }
 
-  const deleteGame = async (gameId) => {
+  const deleteGame = async (gameId, imagePublicId) => {
     if (!confirm("Are you sure you want to delete this game?")) return
 
     try {
@@ -88,6 +89,24 @@ export default function AdminGames() {
       }
 
       console.log(`Client: Game ${gameId} deleted successfully`)
+
+      // If we have the image public ID, try to delete it from Cloudinary
+      if (imagePublicId) {
+        try {
+          await fetch("/api/upload", {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ publicId: imagePublicId }),
+          })
+          console.log(`Client: Image ${imagePublicId} deleted from Cloudinary`)
+        } catch (imageError) {
+          console.error(`Client: Error deleting image ${imagePublicId}:`, imageError)
+          // Continue even if image deletion fails
+        }
+      }
+
       // Refresh games list
       fetchGames()
     } catch (err) {
@@ -154,36 +173,53 @@ export default function AdminGames() {
               {games.map((game) => (
                 <tr key={game.id || game._id} className="hover:bg-gray-50">
                   <td className="py-2 px-4 border-b">
-                    <img
-                      src={game.image || "/placeholder.svg"}
-                      alt={game.name}
-                      className="w-16 h-16 object-cover"
-                      onError={(e) => {
-                        e.target.src = "/placeholder.svg"
-                      }}
-                    />
+                    {game.image ? (
+                      <img
+                        src={game.image || "/placeholder.svg"}
+                        alt={game.name}
+                        className="w-16 h-16 object-cover rounded"
+                        onError={(e) => {
+                          e.target.src = "/placeholder.svg"
+                          e.target.onerror = null
+                        }}
+                      />
+                    ) : (
+                      <div className="w-16 h-16 bg-gray-200 flex items-center justify-center rounded">
+                        <FaImage className="text-gray-400 text-xl" />
+                      </div>
+                    )}
                   </td>
                   <td className="py-2 px-4 border-b">{game.id}</td>
                   <td className="py-2 px-4 border-b">{game.name}</td>
-                  <td className="py-2 px-4 border-b">{game.description || "-"}</td>
+                  <td className="py-2 px-4 border-b">
+                    {game.description ? (
+                      <span className="line-clamp-2">{game.description}</span>
+                    ) : (
+                      <span className="text-gray-400 italic">No description</span>
+                    )}
+                  </td>
                   <td className="py-2 px-4 border-b">
                     {game.featured ? (
-                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                        Yes
+                      <span className="flex items-center gap-1 text-yellow-500">
+                        <FaStar /> Featured
                       </span>
                     ) : (
-                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-                        No
-                      </span>
+                      <span className="text-gray-400">-</span>
                     )}
                   </td>
                   <td className="py-2 px-4 border-b">
                     <div className="flex space-x-2">
-                      <Link href={`/admin/games/edit/${game.id}`} className="text-blue-500 hover:text-blue-700">
-                        Edit
+                      <Link
+                        href={`/admin/games/edit/${game.id}`}
+                        className="flex items-center gap-1 text-blue-500 hover:text-blue-700"
+                      >
+                        <FaEdit /> Edit
                       </Link>
-                      <button onClick={() => deleteGame(game.id)} className="text-red-500 hover:text-red-700">
-                        Delete
+                      <button
+                        onClick={() => deleteGame(game.id, game.imagePublicId)}
+                        className="flex items-center gap-1 text-red-500 hover:text-red-700"
+                      >
+                        <FaTrash /> Delete
                       </button>
                     </div>
                   </td>

@@ -39,7 +39,17 @@ export async function PUT(request, { params }) {
     body.updatedAt = Date.now()
     console.log(`API: PUT /api/games/${id} - Updating game...`)
 
-    const updatedGame = await Game.findOneAndUpdate({ id }, body, { new: true, runValidators: true })
+    // Make sure to include the imagePublicId field
+    const updatedGame = await Game.findOneAndUpdate(
+      { id },
+      {
+        ...body,
+        // Ensure these fields are included in the update
+        image: body.image,
+        imagePublicId: body.imagePublicId,
+      },
+      { new: true, runValidators: true },
+    )
 
     if (!updatedGame) {
       console.log(`API: PUT /api/games/${id} - Game not found`)
@@ -63,15 +73,26 @@ export async function DELETE(request, { params }) {
     const { id } = params
     console.log(`API: DELETE /api/games/${id} - Deleting game...`)
 
-    const deletedGame = await Game.findOneAndDelete({ id })
+    // Get the game first to access its imagePublicId
+    const game = await Game.findOne({ id })
 
-    if (!deletedGame) {
+    if (!game) {
       console.log(`API: DELETE /api/games/${id} - Game not found`)
       return NextResponse.json({ message: "Game not found" }, { status: 404 })
     }
 
+    // Delete the game from the database
+    await Game.deleteOne({ id })
+
+    // If the game has an imagePublicId, we could delete it from Cloudinary here
+    // But we'll leave that to a separate cleanup process or manual deletion
+    // to avoid errors if the image is already deleted or used elsewhere
+
     console.log(`API: DELETE /api/games/${id} - Game deleted successfully`)
-    return NextResponse.json({ message: "Game deleted" })
+    return NextResponse.json({
+      message: "Game deleted",
+      imagePublicId: game.imagePublicId, // Return this so client can delete if needed
+    })
   } catch (error) {
     console.error(`API: DELETE /api/games/${params.id} - Error:`, error)
     return NextResponse.json({ error: error.message }, { status: 500 })
