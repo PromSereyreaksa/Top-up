@@ -1,5 +1,8 @@
+import { defineConfig } from 'next';
+import crypto from 'crypto-browserify'; // Use the polyfill for crypto
+
 /** @type {import('next').NextConfig} */
-const nextConfig = {
+const nextConfig = defineConfig({
   reactStrictMode: true,
   eslint: {
     ignoreDuringBuilds: true,
@@ -29,15 +32,15 @@ const nextConfig = {
     ];
   },
   webpack(config, { isServer }) {
-    // Polyfill `crypto` for client-side (if necessary)
     if (!isServer) {
+      // Polyfill `crypto` for client-side usage
       config.resolve.fallback = {
         crypto: require.resolve('crypto-browserify'),
       };
     }
     return config;
   },
-};
+});
 
 // ✅ Use ES module export
 export default nextConfig;
