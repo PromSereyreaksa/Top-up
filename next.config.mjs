@@ -1,8 +1,7 @@
-import { defineConfig } from 'next';
-import crypto from 'crypto-browserify'; // Use the polyfill for crypto
+import crypto from 'crypto-browserify';
 
 /** @type {import('next').NextConfig} */
-const nextConfig = defineConfig({
+const nextConfig = {
   reactStrictMode: true,
   eslint: {
     ignoreDuringBuilds: true,
@@ -40,7 +39,6 @@ const nextConfig = defineConfig({
     }
     return config;
   },
-});
+};
 
-// ✅ Use ES module export
 export default nextConfig;
