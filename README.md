@@ -220,3 +220,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 📞 Support
 
 For support, email [coppsary@gmail.com](mailto:coppsary@gmail.com) or join our Discord server.
+
+## See the process below
+![Application Architecture](public/Application-Architecture.png)
+![Real Time Communication](public/Real-time-Communication-Flow.png)
