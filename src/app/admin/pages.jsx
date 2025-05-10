@@ -1,5 +1,5 @@
-import Games from "./games"
+import Games from './games';
 
 export default function AdminPage() {
-  return <Games />
+    return <Games />;
 }

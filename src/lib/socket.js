@@ -3,9 +3,16 @@ import { Server } from "socket.io"
 let io
 
 export function initializeSocket(server) {
-  if (io) return io
+  // If io is already initialized and we're in development, return it
+  if (io) {
+    console.log("Socket.IO already initialized, reusing existing instance")
+    return io
+  }
 
   try {
+    console.log("Initializing Socket.IO server...")
+
+    // Create new Socket.IO server
     io = new Server(server, {
       cors: {
         origin: process.env.NEXT_PUBLIC_SITE_URL || "*",
@@ -73,44 +80,39 @@ export function initializeSocket(server) {
       console.error("Connection error:", err)
     })
 
-    console.log("Socket.io server initialized")
+    console.log("Socket.io server initialized successfully")
     return io
   } catch (error) {
     console.error("Failed to initialize Socket.io server:", error)
-    throw error
+    // Don't throw the error, just log it
+    return null
   }
 }
 
-export function getIO() {
-  if (!io) {
-    throw new Error("Socket.io not initialized. Call initializeSocket first.")
-  }
-  return io
-}
-
-export function emitOrderUpdate(order) {
-  if (!io) return
-
-  try {
-    // Emit to admin room
-    io.to("admin").emit("order-update", order)
-
-    // Also emit to specific order room if anyone is listening
-    io.to(`order-${order.orderId}`).emit("order-update", order)
-
-    console.log(`Emitted order update for ${order.orderId}`)
-  } catch (error) {
-    console.error(`Error emitting order update for ${order.orderId}:`, error)
+export const emitOrderUpdate = (order) => {
+  if (io) {
+    try {
+      io.to(`order-${order.orderId}`).emit("order-update", order)
+      console.log(`Emitted order-update event for order ${order.orderId}`)
+    } catch (error) {
+      console.error(`Failed to emit order update for ${order.orderId}:`, error)
+    }
+  } else {
+    console.log("Socket.IO not initialized, cannot emit order update")
   }
 }
 
-export function emitDashboardUpdate(stats) {
-  if (!io) return
-
-  try {
-    io.to("admin").emit("dashboard-update", stats)
-    console.log("Emitted dashboard update")
-  } catch (error) {
-    console.error("Error emitting dashboard update:", error)
+export const emitDashboardUpdate = (stats) => {
+  if (io) {
+    try {
+      io.to("admin").emit("dashboard-update", stats)
+      console.log("Emitted dashboard-update event to admin room")
+    } catch (error) {
+      console.error("Failed to emit dashboard update:", error)
+    }
+  } else {
+    console.log("Socket.IO not initialized, cannot emit dashboard update")
   }
 }
+
+export { io }

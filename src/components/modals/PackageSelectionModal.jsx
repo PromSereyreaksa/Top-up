@@ -110,7 +110,7 @@ const PackageSelectionModal = ({ isOpen, onClose, onBack, onNext }) => {
       ]
     } else if (id === "clash-of-clans") {
       packages = [
-        { id: 1, name: "80 Gems", amount: 80, price: 1, currency: "Gems" },
+        { id: 1, name: "80 Gems", amount: 80, price: 0.01, currency: "Gems" },
         { id: 2, name: "500 Gems", amount: 500, price: 5, currency: "Gems" },
         { id: 3, name: "1200 Gems", amount: 1200, price: 10, currency: "Gems" },
         { id: 4, name: "2500 Gems", amount: 2500, price: 20, currency: "Gems" },

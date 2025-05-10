@@ -1,47 +1,41 @@
-import { createServer } from "http";
-import { parse } from "url";
-import next from "next";
-import { initializeSocket } from "./lib/socket.js";
-import "dotenv/config";
+const { createServer } = require("http")
+const { parse } = require("url")
+const next = require("next")
+const { initializeSocket } = require("./lib/socket")
 
-const dev = process.env.NODE_ENV !== "production";
-const app = next({ dev });
-const handle = app.getRequestHandler();
+const dev = process.env.NODE_ENV !== "production"
+const hostname = "localhost"
+const port = process.env.PORT || 3000
 
-// Graceful shutdown handling
-let server;
-process.on("SIGTERM", () => {
-  console.log("SIGTERM received, shutting down gracefully");
-  if (server) {
-    server.close(() => {
-      console.log("HTTP server closed");
-      process.exit(0);
-    });
-  } else {
-    process.exit(0);
-  }
-});
+// Initialize Next.js
+const app = next({ dev, hostname, port })
+const handle = app.getRequestHandler()
 
 app.prepare().then(() => {
-  server = createServer((req, res) => {
-    const parsedUrl = parse(req.url, true);
-    handle(req, res, parsedUrl);
-  });
+  // Create HTTP server
+  const server = createServer(async (req, res) => {
+    try {
+      const parsedUrl = parse(req.url, true)
+      await handle(req, res, parsedUrl)
+    } catch (err) {
+      console.error("Error occurred handling", req.url, err)
+      res.statusCode = 500
+      res.end("Internal Server Error")
+    }
+  })
 
-  // Error handling for server
-  server.on("error", (err) => {
-    console.error("Server error:", err);
-  });
-
-  // Initialize socket.io with error handling
+  // Initialize Socket.IO with the HTTP server
   try {
-    initializeSocket(server);
+    console.log("Initializing Socket.IO from server.js...")
+    initializeSocket(server)
+    console.log("Socket.IO initialization complete")
   } catch (error) {
-    console.error("Failed to initialize socket.io:", error);
+    console.error("Failed to initialize Socket.IO:", error)
   }
 
-  server.listen(process.env.PORT || 3000, (err) => {
-    if (err) throw err;
-    console.log(`> Ready on http://localhost:${process.env.PORT || 3000}`);
-  });
-});
+  // Start the server
+  server.listen(port, (err) => {
+    if (err) throw err
+    console.log(`> Ready on http://${hostname}:${port}`)
+  })
+})
